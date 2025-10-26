@@ -22,7 +22,7 @@ cd spendtap_backend
 
 2. Construir y ejecutar con Docker Compose:
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 El servidor estará disponible en: `http://localhost:8000`
@@ -31,16 +31,16 @@ El servidor estará disponible en: `http://localhost:8000`
 
 ```bash
 # Ver logs de la aplicación
-docker-compose logs -f
+docker compose logs -f
 
 # Acceder al contenedor
-docker-compose exec spendtap-api bash
+docker compose exec spendtap-api bash
 
 # Parar la aplicación
-docker-compose down
+docker compose down
 
 # Parar y eliminar volúmenes
-docker-compose down -v
+docker compose down -v
 ```
 
 ## Instalación Manual (Desarrollo)

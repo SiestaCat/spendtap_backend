@@ -50,8 +50,9 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # Warm up the cache and set permissions
 RUN php bin/console cache:warmup --env=prod
 
-# Create database and run migrations
-RUN php bin/console doctrine:migrations:migrate --no-interaction
+# Copy and make entrypoint script executable
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Final permission fix
 RUN chown -R www-data:www-data /var/www
@@ -59,5 +60,5 @@ RUN chown -R www-data:www-data /var/www
 # Expose port 80
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Use entrypoint script
+ENTRYPOINT ["docker-entrypoint.sh"]
