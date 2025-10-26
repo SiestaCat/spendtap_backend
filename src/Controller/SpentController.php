@@ -37,7 +37,7 @@ class SpentController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if (!$data) {
-            throw $e; //return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
         }
 
         $spent = new Spent();
@@ -51,7 +51,7 @@ class SpentController extends AbstractController
         }
 
         if (!isset($data['amount']) || !is_numeric($data['amount'])) {
-            throw $e; //return new JsonResponse(['error' => 'Amount is required and must be numeric'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Amount is required and must be numeric'], Response::HTTP_BAD_REQUEST);
         }
         $spent->setAmount((string) $data['amount']);
 
@@ -87,7 +87,7 @@ class SpentController extends AbstractController
         if (isset($data['month'])) {
             $month = (int) $data['month'];
             if ($month < 1 || $month > 12) {
-                throw $e; //return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+                return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
             }
             $spent->setMonth($month);
         }
@@ -96,7 +96,7 @@ class SpentController extends AbstractController
         if (isset($data['year'])) {
             $year = (int) $data['year'];
             if ($year < 1900 || $year > 9999) {
-                throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+                return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
             }
             $spent->setYear($year);
         }
@@ -132,7 +132,7 @@ class SpentController extends AbstractController
         $categoriesParam = $request->query->get('categories', '');
 
         if (!$month || !$year) {
-            throw $e; //return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
         }
 
         $month = (int) $month;
@@ -145,7 +145,7 @@ class SpentController extends AbstractController
             if (str_starts_with($categoriesParam, '[')) {
                 $categories = json_decode($categoriesParam, true);
                 if (!is_array($categories)) {
-                    throw $e; //return new JsonResponse(['error' => 'Invalid categories format. Must be a JSON array'], Response::HTTP_BAD_REQUEST);
+                    return new JsonResponse(['error' => 'Invalid categories format. Must be a JSON array'], Response::HTTP_BAD_REQUEST);
                 }
             } else {
                 $categories = array_filter(array_map('trim', explode(',', $categoriesParam)));
@@ -153,11 +153,11 @@ class SpentController extends AbstractController
         }
 
         if ($month < 1 || $month > 12) {
-            throw $e; //return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -219,7 +219,7 @@ class SpentController extends AbstractController
             $spent = $this->spentRepository->find($id);
 
             if (!$spent) {
-                throw $e; //return new JsonResponse(['error' => 'Spent entry not found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'Spent entry not found'], Response::HTTP_NOT_FOUND);
             }
 
             $this->entityManager->remove($spent);
@@ -245,14 +245,14 @@ class SpentController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if (!$data) {
-            throw $e; //return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
             $spent = $this->spentRepository->find($id);
 
             if (!$spent) {
-                throw $e; //return new JsonResponse(['error' => 'Spent entry not found'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['error' => 'Spent entry not found'], Response::HTTP_NOT_FOUND);
             }
 
             // Update description if provided
@@ -268,7 +268,7 @@ class SpentController extends AbstractController
             // Update amount if provided
             if (isset($data['amount'])) {
                 if (!is_numeric($data['amount'])) {
-                    throw $e; //return new JsonResponse(['error' => 'Amount must be numeric'], Response::HTTP_BAD_REQUEST);
+                    return new JsonResponse(['error' => 'Amount must be numeric'], Response::HTTP_BAD_REQUEST);
                 }
                 $spent->setAmount((string) $data['amount']);
             }
@@ -295,7 +295,7 @@ class SpentController extends AbstractController
             if (isset($data['month'])) {
                 $month = (int) $data['month'];
                 if ($month < 1 || $month > 12) {
-                    throw $e; //return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+                    return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
                 }
                 $spent->setMonth($month);
             }
@@ -304,7 +304,7 @@ class SpentController extends AbstractController
             if (isset($data['year'])) {
                 $year = (int) $data['year'];
                 if ($year < 1900 || $year > 9999) {
-                    throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+                    return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
                 }
                 $spent->setYear($year);
             }
@@ -336,13 +336,13 @@ class SpentController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if (!$data) {
-            throw $e; //return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
         }
 
         // Validate required parameters
         if (!isset($data['source_month']) || !isset($data['source_year']) || 
             !isset($data['target_month']) || !isset($data['target_year'])) {
-            throw $e; //return new JsonResponse(['error' => 'source_month, source_year, target_month, and target_year are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'source_month, source_year, target_month, and target_year are required'], Response::HTTP_BAD_REQUEST);
         }
 
         $sourceMonth = (int) $data['source_month'];
@@ -353,11 +353,11 @@ class SpentController extends AbstractController
 
         // Validate month and year values
         if ($sourceMonth < 1 || $sourceMonth > 12 || $targetMonth < 1 || $targetMonth > 12) {
-            throw $e; //return new JsonResponse(['error' => 'Months must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Months must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($sourceYear < 1900 || $sourceYear > 9999 || $targetYear < 1900 || $targetYear > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Years must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Years must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -453,18 +453,18 @@ class SpentController extends AbstractController
         $year = $request->query->get('year');
 
         if (!$month || !$year) {
-            throw $e; //return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
         }
 
         $month = (int) $month;
         $year = (int) $year;
 
         if ($month < 1 || $month > 12) {
-            throw $e; //return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -509,13 +509,13 @@ class SpentController extends AbstractController
         $year = $request->query->get('year');
 
         if (!$year) {
-            throw $e; //return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
         }
 
         $year = (int) $year;
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -558,18 +558,18 @@ class SpentController extends AbstractController
         $year = $request->query->get('year');
 
         if (!$month || !$year) {
-            throw $e; //return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
         }
 
         $month = (int) $month;
         $year = (int) $year;
 
         if ($month < 1 || $month > 12) {
-            throw $e; //return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -610,18 +610,18 @@ class SpentController extends AbstractController
         $year = $request->query->get('year');
 
         if (!$month || !$year) {
-            throw $e; //return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
         }
 
         $month = (int) $month;
         $year = (int) $year;
 
         if ($month < 1 || $month > 12) {
-            throw $e; //return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -679,13 +679,13 @@ class SpentController extends AbstractController
         $year = $request->query->get('year');
 
         if (!$year) {
-            throw $e; //return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
         }
 
         $year = (int) $year;
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -741,18 +741,18 @@ class SpentController extends AbstractController
         $year = $request->query->get('year');
 
         if (!$month || !$year) {
-            throw $e; //return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
         }
 
         $month = (int) $month;
         $year = (int) $year;
 
         if ($month < 1 || $month > 12) {
-            throw $e; //return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -810,13 +810,13 @@ class SpentController extends AbstractController
         $year = $request->query->get('year');
 
         if (!$year) {
-            throw $e; //return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
         }
 
         $year = (int) $year;
 
         if ($year < 1900 || $year > 9999) {
-            throw $e; //return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
