@@ -1,5 +1,30 @@
 # API Documentation
 
+## Authentication
+
+All API endpoints require authentication using a Bearer token in the Authorization header.
+
+**Header Required:**
+- `Authorization: Bearer <your-api-token>`
+
+The API token is configured via the `APP_API_TOKEN` environment variable.
+
+**Authentication Error Responses:**
+
+**401 Unauthorized - Missing Authorization Header:**
+```json
+{
+    "error": "Authorization header required"
+}
+```
+
+**401 Unauthorized - Invalid Token:**
+```json
+{
+    "error": "Invalid API token"
+}
+```
+
 ## Spent Endpoints
 
 ### Create Spent Entry
@@ -10,6 +35,7 @@
 
 **Request Headers:**
 - `Content-Type: application/json`
+- `Authorization: Bearer <your-api-token>`
 
 **Request Body Parameters:**
 
@@ -55,6 +81,7 @@
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
     "description": "Lunch at restaurant",
     "category": "Food",
@@ -67,6 +94,7 @@ curl -X POST http://localhost:8000/api/spent \
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
     "amount": "15.75"
   }'
@@ -76,6 +104,7 @@ curl -X POST http://localhost:8000/api/spent \
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
     "category": "Transportation",
     "amount": "12.00"
@@ -86,6 +115,7 @@ curl -X POST http://localhost:8000/api/spent \
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
     "description": "Bus ticket to downtown",
     "amount": "3.25"
@@ -96,6 +126,7 @@ curl -X POST http://localhost:8000/api/spent \
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
     "description": "Grocery shopping",
     "category": "Food",
@@ -106,10 +137,42 @@ curl -X POST http://localhost:8000/api/spent \
 
 ### Error Examples
 
+#### Missing Authorization Header
+```bash
+curl -X POST http://localhost:8000/api/spent \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": "10.00"
+  }'
+```
+**Response (401):**
+```json
+{
+    "error": "Authorization header required"
+}
+```
+
+#### Invalid API Token
+```bash
+curl -X POST http://localhost:8000/api/spent \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer invalid-token" \
+  -d '{
+    "amount": "10.00"
+  }'
+```
+**Response (401):**
+```json
+{
+    "error": "Invalid API token"
+}
+```
+
 #### Invalid JSON
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{"amount": "invalid"}'
 ```
 **Response (400):**
@@ -123,6 +186,7 @@ curl -X POST http://localhost:8000/api/spent \
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
     "description": "Test expense"
   }'
@@ -138,6 +202,7 @@ curl -X POST http://localhost:8000/api/spent \
 ```bash
 curl -X POST http://localhost:8000/api/spent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
     "amount": "10.00",
     "date": "invalid-date"
