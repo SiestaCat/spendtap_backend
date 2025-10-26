@@ -33,6 +33,8 @@ WORKDIR /var/www/html
 # Copy existing application directory contents
 COPY --chown=www-data:www-data . /var/www/html
 
+RUN mkdir -p /var/www/html/db
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
