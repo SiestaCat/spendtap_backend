@@ -171,4 +171,31 @@ class SpentController extends AbstractController
         }
     }
 
+    #[Route('/delete/{id}', name: 'delete_spent', methods: ['DELETE'])]
+    public function delete(Request $request, int $id): JsonResponse
+    {
+        $authResponse = $this->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        try {
+            $spent = $this->spentRepository->find($id);
+
+            if (!$spent) {
+                return new JsonResponse(['error' => 'Spent entry not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $this->entityManager->remove($spent);
+            $this->entityManager->flush();
+
+            return new JsonResponse([
+                'message' => 'Spent entry deleted successfully',
+                'id' => $id
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to delete spent entry'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

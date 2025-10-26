@@ -373,6 +373,43 @@ curl -X POST http://localhost:8000/api/spent/create \
 }
 ```
 
+### Delete Spent Entry
+
+**Endpoint:** `DELETE /api/spent/delete/{id}`
+
+**Description:** Deletes a specific spent entry by ID.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**URL Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | ID of the spent entry to delete |
+
+**Response (200 OK):**
+```json
+{
+    "message": "Spent entry deleted successfully",
+    "id": 123
+}
+```
+
+**Error (404 Not Found):**
+```json
+{
+    "error": "Spent entry not found"
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to delete spent entry"
+}
+```
+
 ### cURL Examples for New Endpoints
 
 #### Get Recent Descriptions (Default Limit)
@@ -408,6 +445,18 @@ curl -X GET "http://localhost:8000/api/spent/filter?month=10&year=2024" \
 #### Filter Spent Entries for Different Month/Year
 ```bash
 curl -X GET "http://localhost:8000/api/spent/filter?month=12&year=2023" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Delete Spent Entry
+```bash
+curl -X DELETE http://localhost:8000/api/spent/delete/123 \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Delete Spent Entry (Example with ID 5)
+```bash
+curl -X DELETE http://localhost:8000/api/spent/delete/5 \
   -H "Authorization: Bearer your-secure-api-token-here"
 ```
 
