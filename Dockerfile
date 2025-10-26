@@ -37,8 +37,8 @@ COPY --chown=www-data:www-data . /var/www/html
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Create required directories with proper permissions
-RUN mkdir -p /var/log/spendtap /var/db/spendtap /var/www/html/var/cache /var/www/html/var/log
-RUN chown -R www-data:www-data /var/www/html/var /var/log/spendtap /var/db/spendtap
+RUN mkdir -p /var/log/spendtap /var/www/html/var/cache /var/www/html/var/log
+RUN chown -R www-data:www-data /var/www/html/var /var/log/spendtap
 
 # Configure Apache Document Root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public

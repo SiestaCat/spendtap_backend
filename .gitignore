@@ -10,3 +10,4 @@
 ###< symfony/framework-bundle ###
 
 /.docker_volumes/
+/db/

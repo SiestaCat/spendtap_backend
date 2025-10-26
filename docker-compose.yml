@@ -8,5 +8,5 @@ services:
       - APP_API_TOKEN=your-secure-api-token-here
     volumes:
       - ./.docker_volumes/logs:/var/www/html/var/log
-      - ./.docker_volumes/db:/var/www/html/var/db
+      - ./.docker_volumes/db:/var/www/html/db
     restart: always
