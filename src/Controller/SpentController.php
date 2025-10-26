@@ -4,50 +4,32 @@ namespace App\Controller;
 
 use App\Entity\Spent;
 use App\Repository\SpentRepository;
+use App\Service\AuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[Route('/api/spent')]
 class SpentController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private SpentRepository $spentRepository;
-    private ParameterBagInterface $parameterBag;
+    private AuthService $authService;
 
-    public function __construct(EntityManagerInterface $entityManager, SpentRepository $spentRepository, ParameterBagInterface $parameterBag)
+    public function __construct(EntityManagerInterface $entityManager, SpentRepository $spentRepository, AuthService $authService)
     {
         $this->entityManager = $entityManager;
         $this->spentRepository = $spentRepository;
-        $this->parameterBag = $parameterBag;
-    }
-
-    private function checkAuthentication(Request $request): ?JsonResponse
-    {
-        $providedToken = $request->headers->get('Authorization');
-        $expectedToken = $this->parameterBag->get('app.api_token');
-        
-        if (!$providedToken || !str_starts_with($providedToken, 'Bearer ')) {
-            return new JsonResponse(['error' => 'Authorization header required'], Response::HTTP_UNAUTHORIZED);
-        }
-        
-        $token = substr($providedToken, 7); // Remove 'Bearer ' prefix
-        
-        if ($token !== $expectedToken) {
-            return new JsonResponse(['error' => 'Invalid API token'], Response::HTTP_UNAUTHORIZED);
-        }
-        
-        return null; // Authentication successful
+        $this->authService = $authService;
     }
 
     #[Route('/create', name: 'create_spent', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $authResponse = $this->checkAuthentication($request);
+        $authResponse = $this->authService->checkAuthentication($request);
         if ($authResponse) {
             return $authResponse;
         }
@@ -110,7 +92,7 @@ class SpentController extends AbstractController
     #[Route('/filter', name: 'filter_spent', methods: ['GET'])]
     public function filter(Request $request): JsonResponse
     {
-        $authResponse = $this->checkAuthentication($request);
+        $authResponse = $this->authService->checkAuthentication($request);
         if ($authResponse) {
             return $authResponse;
         }
@@ -174,7 +156,7 @@ class SpentController extends AbstractController
     #[Route('/delete/{id}', name: 'delete_spent', methods: ['DELETE'])]
     public function delete(Request $request, int $id): JsonResponse
     {
-        $authResponse = $this->checkAuthentication($request);
+        $authResponse = $this->authService->checkAuthentication($request);
         if ($authResponse) {
             return $authResponse;
         }
@@ -201,7 +183,7 @@ class SpentController extends AbstractController
     #[Route('/edit/{id}', name: 'edit_spent', methods: ['PUT'])]
     public function edit(Request $request, int $id): JsonResponse
     {
-        $authResponse = $this->checkAuthentication($request);
+        $authResponse = $this->authService->checkAuthentication($request);
         if ($authResponse) {
             return $authResponse;
         }

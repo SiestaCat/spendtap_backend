@@ -483,6 +483,63 @@ curl -X POST http://localhost:8000/api/spent/create \
 }
 ```
 
+### Get All Descriptions
+
+**Endpoint:** `GET /api/spent/all_descriptions`
+
+**Description:** Returns all unique descriptions from spent entries (non-null values only), ordered alphabetically.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Response (200 OK):**
+```json
+{
+    "descriptions": [
+        "Bus ticket to downtown",
+        "Coffee at Starbucks",
+        "Grocery shopping",
+        "Lunch at restaurant"
+    ],
+    "count": 4
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch all descriptions"
+}
+```
+
+### Get All Categories
+
+**Endpoint:** `GET /api/spent/all_categories`
+
+**Description:** Returns all unique categories from spent entries (non-null values only), ordered alphabetically.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Response (200 OK):**
+```json
+{
+    "categories": [
+        "Entertainment",
+        "Food",
+        "Transportation"
+    ],
+    "count": 3
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch all categories"
+}
+```
+
 ### cURL Examples for New Endpoints
 
 #### Get Recent Descriptions (Default Limit)
@@ -565,5 +622,17 @@ curl -X PUT http://localhost:8000/api/spent/edit/123 \
     "description": "Dinner at Italian restaurant",
     "category": "Dining"
   }'
+```
+
+#### Get All Descriptions
+```bash
+curl -X GET http://localhost:8000/api/spent/all_descriptions \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get All Categories
+```bash
+curl -X GET http://localhost:8000/api/spent/all_categories \
+  -H "Authorization: Bearer your-secure-api-token-here"
 ```
 

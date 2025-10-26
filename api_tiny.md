@@ -37,6 +37,14 @@ All endpoints require: `Authorization: Bearer <your-api-token>`
 - **Body:** `{"description": "string", "category": "string", "amount": "number", "date": "string"}` (all optional)
 - **Returns:** `{"id": 123, "description": "Updated lunch", "category": "Food", "amount": "35.75", "date": "2024-10-26 15:00:00", "month": 10, "year": 2024}`
 
+### Get All Descriptions
+- **GET** `/api/spent/all_descriptions`
+- **Returns:** `{"descriptions": ["Coffee", "Lunch", "Transport"], "count": 3}`
+
+### Get All Categories
+- **GET** `/api/spent/all_categories`
+- **Returns:** `{"categories": ["Food", "Transportation", "Entertainment"], "count": 3}`
+
 ## Response Format
 All endpoints return JSON with `data`, `count`, and relevant metadata.
 

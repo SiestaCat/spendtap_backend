@@ -3,48 +3,30 @@
 namespace App\Controller;
 
 use App\Entity\Spent;
+use App\Service\AuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[Route('/api/spent')]
 class DescriptionController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
-    private ParameterBagInterface $parameterBag;
+    private AuthService $authService;
 
-    public function __construct(EntityManagerInterface $entityManager, ParameterBagInterface $parameterBag)
+    public function __construct(EntityManagerInterface $entityManager, AuthService $authService)
     {
         $this->entityManager = $entityManager;
-        $this->parameterBag = $parameterBag;
-    }
-
-    private function checkAuthentication(Request $request): ?JsonResponse
-    {
-        $providedToken = $request->headers->get('Authorization');
-        $expectedToken = $this->parameterBag->get('app.api_token');
-        
-        if (!$providedToken || !str_starts_with($providedToken, 'Bearer ')) {
-            return new JsonResponse(['error' => 'Authorization header required'], Response::HTTP_UNAUTHORIZED);
-        }
-        
-        $token = substr($providedToken, 7); // Remove 'Bearer ' prefix
-        
-        if ($token !== $expectedToken) {
-            return new JsonResponse(['error' => 'Invalid API token'], Response::HTTP_UNAUTHORIZED);
-        }
-        
-        return null; // Authentication successful
+        $this->authService = $authService;
     }
 
     #[Route('/last_descriptions', name: 'get_last_descriptions', methods: ['GET'])]
     public function getDescriptions(Request $request): JsonResponse
     {
-        $authResponse = $this->checkAuthentication($request);
+        $authResponse = $this->authService->checkAuthentication($request);
         if ($authResponse) {
             return $authResponse;
         }
@@ -72,6 +54,35 @@ class DescriptionController extends AbstractController
             ]);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Failed to fetch descriptions'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/all_descriptions', name: 'get_all_descriptions', methods: ['GET'])]
+    public function getAllDescriptions(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        try {
+            $descriptions = $this->entityManager
+                ->createQueryBuilder()
+                ->select('DISTINCT s.description')
+                ->from(Spent::class, 's')
+                ->where('s.description IS NOT NULL')
+                ->orderBy('s.description', 'ASC')
+                ->getQuery()
+                ->getArrayResult();
+
+            $result = array_column($descriptions, 'description');
+
+            return new JsonResponse([
+                'descriptions' => array_values($result),
+                'count' => count($result)
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch all descriptions'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
