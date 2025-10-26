@@ -50,6 +50,21 @@ All endpoints require: `Authorization: Bearer <your-api-token>`
 - **Body:** `{"source_month": 8, "source_year": 2025, "target_month": 9, "target_year": 2025, "category": "Food"}` (category optional)
 - **Returns:** `{"message": "Entries copied successfully", "copied_count": 15, "filters": {...}}`
 
+### Monthly Breakdown
+- **GET** `/api/spent/breakdown_month?month=10&year=2024`
+- **Query:** `month` (1-12, required), `year` (1900-9999, required)
+- **Returns:** `{"total": "1250.75", "expense_amount": "-800.25", "income_amount": "2051.00", "entry_count": 45, "filters": {...}}`
+
+### Yearly Breakdown
+- **GET** `/api/spent/breakdown_year?year=2024`
+- **Query:** `year` (1900-9999, required)
+- **Returns:** `{"total": "15420.50", "expense_amount": "-12800.75", "income_amount": "28221.25", "entry_count": 540, "filters": {...}}`
+
+### Balance Before Date
+- **GET** `/api/spent/balance?month=10&year=2024`
+- **Query:** `month` (1-12, required), `year` (1900-9999, required)
+- **Returns:** `{"balance": "5420.75", "entry_count": 125, "filters": {"before_month": 10, "before_year": 2024}}`
+
 ## Response Format
 All endpoints return JSON with `data`, `count`, and relevant metadata.
 

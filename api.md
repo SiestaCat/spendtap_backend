@@ -632,6 +632,159 @@ curl -X POST http://localhost:8000/api/spent/create \
 - Time (hours, minutes, seconds) is preserved from the original entry
 - Day is automatically adjusted to the maximum available day in the target month
 
+### Monthly Breakdown
+
+**Endpoint:** `GET /api/spent/breakdown_month`
+
+**Description:** Returns financial breakdown for a specific month and year with totals, expenses, and income.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `month` | integer | Yes | Month number (1-12) |
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "total": "1250.75",
+    "expense_amount": "-800.25",
+    "income_amount": "2051.00",
+    "entry_count": 45,
+    "filters": {
+        "month": 10,
+        "year": 2024
+    }
+}
+```
+
+**Error (400 Bad Request) - Missing Parameters:**
+```json
+{
+    "error": "Month and year parameters are required"
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch monthly breakdown"
+}
+```
+
+### Yearly Breakdown
+
+**Endpoint:** `GET /api/spent/breakdown_year`
+
+**Description:** Returns financial breakdown for an entire year with totals, expenses, and income.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "total": "15420.50",
+    "expense_amount": "-12800.75",
+    "income_amount": "28221.25",
+    "entry_count": 540,
+    "filters": {
+        "year": 2024
+    }
+}
+```
+
+**Error (400 Bad Request) - Missing Parameter:**
+```json
+{
+    "error": "Year parameter is required"
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch yearly breakdown"
+}
+```
+
+**Breakdown Calculations:**
+- **total**: Sum of all amounts (positive + negative)
+- **expense_amount**: Sum of all negative amounts only (expenses)
+- **income_amount**: Sum of all positive amounts only (income)
+- **entry_count**: Total number of entries for the period
+
+### Balance Before Date
+
+**Endpoint:** `GET /api/spent/balance`
+
+**Description:** Returns the cumulative balance (sum of all amounts) before a specific month and year.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `month` | integer | Yes | Month number (1-12) |
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "balance": "5420.75",
+    "entry_count": 125,
+    "filters": {
+        "before_month": 10,
+        "before_year": 2024
+    }
+}
+```
+
+**Error (400 Bad Request) - Missing Parameters:**
+```json
+{
+    "error": "Month and year parameters are required"
+}
+```
+
+**Error (400 Bad Request) - Invalid Month:**
+```json
+{
+    "error": "Month must be between 1 and 12"
+}
+```
+
+**Error (400 Bad Request) - Invalid Year:**
+```json
+{
+    "error": "Year must be between 1900 and 9999"
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch balance"
+}
+```
+
+**Balance Logic:**
+- Calculates sum of all amounts WHERE `year < :year OR (year = :year AND month < :month)`
+- Returns cumulative balance up to (but not including) the specified month/year
+- Example: `month=10&year=2024` returns balance for all entries before October 2024
+
 ### cURL Examples for New Endpoints
 
 #### Get Recent Descriptions (Default Limit)
@@ -782,5 +935,23 @@ curl -X POST http://localhost:8000/api/spent/copy_month \
     "target_month": 1,
     "target_year": 2025
   }'
+```
+
+#### Get Monthly Breakdown
+```bash
+curl -X GET "http://localhost:8000/api/spent/breakdown_month?month=10&year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Yearly Breakdown
+```bash
+curl -X GET "http://localhost:8000/api/spent/breakdown_year?year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Balance Before Date
+```bash
+curl -X GET "http://localhost:8000/api/spent/balance?month=10&year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
 ```
 

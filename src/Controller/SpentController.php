@@ -441,4 +441,161 @@ class SpentController extends AbstractController
         }
     }
 
+    #[Route('/breakdown_month', name: 'breakdown_month_spent', methods: ['GET'])]
+    public function breakdownMonth(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $month = $request->query->get('month');
+        $year = $request->query->get('year');
+
+        if (!$month || !$year) {
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $month = (int) $month;
+        $year = (int) $year;
+
+        if ($month < 1 || $month > 12) {
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $result = $this->entityManager->createQueryBuilder()
+                ->select('
+                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    COUNT(s.id) as entry_count
+                ')
+                ->from(Spent::class, 's')
+                ->where('s.month = :month')
+                ->andWhere('s.year = :year')
+                ->setParameter('month', $month)
+                ->setParameter('year', $year)
+                ->getQuery()
+                ->getSingleResult();
+
+            return new JsonResponse([
+                'total' => number_format((float) $result['total'], 2, '.', ''),
+                'expense_amount' => number_format((float) $result['expense_amount'], 2, '.', ''),
+                'income_amount' => number_format((float) $result['income_amount'], 2, '.', ''),
+                'entry_count' => (int) $result['entry_count'],
+                'filters' => [
+                    'month' => $month,
+                    'year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch monthly breakdown'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/breakdown_year', name: 'breakdown_year_spent', methods: ['GET'])]
+    public function breakdownYear(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $year = $request->query->get('year');
+
+        if (!$year) {
+            return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $year = (int) $year;
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $result = $this->entityManager->createQueryBuilder()
+                ->select('
+                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    COUNT(s.id) as entry_count
+                ')
+                ->from(Spent::class, 's')
+                ->where('s.year = :year')
+                ->setParameter('year', $year)
+                ->getQuery()
+                ->getSingleResult();
+
+            return new JsonResponse([
+                'total' => number_format((float) $result['total'], 2, '.', ''),
+                'expense_amount' => number_format((float) $result['expense_amount'], 2, '.', ''),
+                'income_amount' => number_format((float) $result['income_amount'], 2, '.', ''),
+                'entry_count' => (int) $result['entry_count'],
+                'filters' => [
+                    'year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch yearly breakdown'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/balance', name: 'balance_spent', methods: ['GET'])]
+    public function balance(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $month = $request->query->get('month');
+        $year = $request->query->get('year');
+
+        if (!$month || !$year) {
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $month = (int) $month;
+        $year = (int) $year;
+
+        if ($month < 1 || $month > 12) {
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $result = $this->entityManager->createQueryBuilder()
+                ->select('
+                    SUM(CAST(s.amount AS DECIMAL(20,2))) as balance,
+                    COUNT(s.id) as entry_count
+                ')
+                ->from(Spent::class, 's')
+                ->where('s.year < :year OR (s.year = :year AND s.month < :month)')
+                ->setParameter('year', $year)
+                ->setParameter('month', $month)
+                ->getQuery()
+                ->getSingleResult();
+
+            return new JsonResponse([
+                'balance' => number_format((float) $result['balance'], 2, '.', ''),
+                'entry_count' => (int) $result['entry_count'],
+                'filters' => [
+                    'before_month' => $month,
+                    'before_year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch balance'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
