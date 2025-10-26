@@ -59,16 +59,46 @@ class SpentController extends AbstractController
             try {
                 $date = new \DateTime($data['date']);
                 $spent->setDate($date);
-                $spent->setMonth((int) $date->format('n'));
-                $spent->setYear((int) $date->format('Y'));
+                
+                // Only auto-calculate month/year if not explicitly provided
+                if (!isset($data['month'])) {
+                    $spent->setMonth((int) $date->format('n'));
+                } 
+                if (!isset($data['year'])) {
+                    $spent->setYear((int) $date->format('Y'));
+                }
             } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Invalid date format'], Response::HTTP_BAD_REQUEST);
             }
         } else {
             $now = new \DateTime();
             $spent->setDate($now);
-            $spent->setMonth((int) $now->format('n'));
-            $spent->setYear((int) $now->format('Y'));
+            
+            // Only auto-calculate month/year if not explicitly provided
+            if (!isset($data['month'])) {
+                $spent->setMonth((int) $now->format('n'));
+            }
+            if (!isset($data['year'])) {
+                $spent->setYear((int) $now->format('Y'));
+            }
+        }
+
+        // Set month if explicitly provided
+        if (isset($data['month'])) {
+            $month = (int) $data['month'];
+            if ($month < 1 || $month > 12) {
+                return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+            }
+            $spent->setMonth($month);
+        }
+
+        // Set year if explicitly provided
+        if (isset($data['year'])) {
+            $year = (int) $data['year'];
+            if ($year < 1900 || $year > 9999) {
+                return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+            }
+            $spent->setYear($year);
         }
 
         try {
@@ -224,11 +254,35 @@ class SpentController extends AbstractController
                 try {
                     $date = new \DateTime($data['date']);
                     $spent->setDate($date);
-                    $spent->setMonth((int) $date->format('n'));
-                    $spent->setYear((int) $date->format('Y'));
+                    
+                    // Only auto-calculate month/year if not explicitly provided
+                    if (!isset($data['month'])) {
+                        $spent->setMonth((int) $date->format('n'));
+                    }
+                    if (!isset($data['year'])) {
+                        $spent->setYear((int) $date->format('Y'));
+                    }
                 } catch (\Exception $e) {
                     return new JsonResponse(['error' => 'Invalid date format'], Response::HTTP_BAD_REQUEST);
                 }
+            }
+
+            // Update month if explicitly provided
+            if (isset($data['month'])) {
+                $month = (int) $data['month'];
+                if ($month < 1 || $month > 12) {
+                    return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+                }
+                $spent->setMonth($month);
+            }
+
+            // Update year if explicitly provided
+            if (isset($data['year'])) {
+                $year = (int) $data['year'];
+                if ($year < 1900 || $year > 9999) {
+                    return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+                }
+                $spent->setYear($year);
             }
 
             $this->entityManager->flush();
