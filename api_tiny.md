@@ -65,6 +65,26 @@ All endpoints require: `Authorization: Bearer <your-api-token>`
 - **Query:** `month` (1-12, required), `year` (1900-9999, required)
 - **Returns:** `{"balance": "5420.75", "entry_count": 125, "filters": {"before_month": 10, "before_year": 2024}}`
 
+### Category Breakdown by Month
+- **GET** `/api/spent/breakdown_category_month?month=10&year=2024`
+- **Query:** `month` (1-12, required), `year` (1900-9999, required)
+- **Returns:** `{"breakdown": [{"category": "Food", "total": "450.75", "expense_amount": "-320.25", "income_amount": "771.00", "entry_count": 15}], "count": 1, "filters": {...}}`
+
+### Category Breakdown by Year
+- **GET** `/api/spent/breakdown_category_year?year=2024`
+- **Query:** `year` (1900-9999, required)
+- **Returns:** `{"breakdown": [{"category": "Food", "total": "5420.75", "expense_amount": "-3850.25", "income_amount": "9271.00", "entry_count": 180}], "count": 1, "filters": {...}}`
+
+### Description Breakdown by Month
+- **GET** `/api/spent/breakdown_description_month?month=10&year=2024`
+- **Query:** `month` (1-12, required), `year` (1900-9999, required)
+- **Returns:** `{"breakdown": [{"description": "Lunch", "total": "150.75", "expense_amount": "-150.75", "income_amount": "0.00", "entry_count": 6}], "count": 1, "filters": {...}}`
+
+### Description Breakdown by Year
+- **GET** `/api/spent/breakdown_description_year?year=2024`
+- **Query:** `year` (1900-9999, required)
+- **Returns:** `{"breakdown": [{"description": "Salary", "total": "36000.00", "expense_amount": "0.00", "income_amount": "36000.00", "entry_count": 12}], "count": 1, "filters": {...}}`
+
 ## Response Format
 All endpoints return JSON with `data`, `count`, and relevant metadata.
 

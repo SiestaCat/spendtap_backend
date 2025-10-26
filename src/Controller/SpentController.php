@@ -598,4 +598,266 @@ class SpentController extends AbstractController
         }
     }
 
+    #[Route('/breakdown_category_month', name: 'breakdown_category_month_spent', methods: ['GET'])]
+    public function breakdownCategoryMonth(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $month = $request->query->get('month');
+        $year = $request->query->get('year');
+
+        if (!$month || !$year) {
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $month = (int) $month;
+        $year = (int) $year;
+
+        if ($month < 1 || $month > 12) {
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $results = $this->entityManager->createQueryBuilder()
+                ->select('
+                    s.category,
+                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    COUNT(s.id) as entry_count
+                ')
+                ->from(Spent::class, 's')
+                ->where('s.month = :month')
+                ->andWhere('s.year = :year')
+                ->andWhere('s.category IS NOT NULL')
+                ->groupBy('s.category')
+                ->orderBy('total', 'DESC')
+                ->setParameter('month', $month)
+                ->setParameter('year', $year)
+                ->getQuery()
+                ->getArrayResult();
+
+            $breakdown = [];
+            foreach ($results as $result) {
+                $breakdown[] = [
+                    'category' => $result['category'],
+                    'total' => number_format((float) $result['total'], 2, '.', ''),
+                    'expense_amount' => number_format((float) $result['expense_amount'], 2, '.', ''),
+                    'income_amount' => number_format((float) $result['income_amount'], 2, '.', ''),
+                    'entry_count' => (int) $result['entry_count']
+                ];
+            }
+
+            return new JsonResponse([
+                'breakdown' => $breakdown,
+                'count' => count($breakdown),
+                'filters' => [
+                    'month' => $month,
+                    'year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch category breakdown'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/breakdown_category_year', name: 'breakdown_category_year_spent', methods: ['GET'])]
+    public function breakdownCategoryYear(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $year = $request->query->get('year');
+
+        if (!$year) {
+            return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $year = (int) $year;
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $results = $this->entityManager->createQueryBuilder()
+                ->select('
+                    s.category,
+                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    COUNT(s.id) as entry_count
+                ')
+                ->from(Spent::class, 's')
+                ->where('s.year = :year')
+                ->andWhere('s.category IS NOT NULL')
+                ->groupBy('s.category')
+                ->orderBy('total', 'DESC')
+                ->setParameter('year', $year)
+                ->getQuery()
+                ->getArrayResult();
+
+            $breakdown = [];
+            foreach ($results as $result) {
+                $breakdown[] = [
+                    'category' => $result['category'],
+                    'total' => number_format((float) $result['total'], 2, '.', ''),
+                    'expense_amount' => number_format((float) $result['expense_amount'], 2, '.', ''),
+                    'income_amount' => number_format((float) $result['income_amount'], 2, '.', ''),
+                    'entry_count' => (int) $result['entry_count']
+                ];
+            }
+
+            return new JsonResponse([
+                'breakdown' => $breakdown,
+                'count' => count($breakdown),
+                'filters' => [
+                    'year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch category breakdown'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/breakdown_description_month', name: 'breakdown_description_month_spent', methods: ['GET'])]
+    public function breakdownDescriptionMonth(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $month = $request->query->get('month');
+        $year = $request->query->get('year');
+
+        if (!$month || !$year) {
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $month = (int) $month;
+        $year = (int) $year;
+
+        if ($month < 1 || $month > 12) {
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $results = $this->entityManager->createQueryBuilder()
+                ->select('
+                    s.description,
+                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    COUNT(s.id) as entry_count
+                ')
+                ->from(Spent::class, 's')
+                ->where('s.month = :month')
+                ->andWhere('s.year = :year')
+                ->andWhere('s.description IS NOT NULL')
+                ->groupBy('s.description')
+                ->orderBy('total', 'DESC')
+                ->setParameter('month', $month)
+                ->setParameter('year', $year)
+                ->getQuery()
+                ->getArrayResult();
+
+            $breakdown = [];
+            foreach ($results as $result) {
+                $breakdown[] = [
+                    'description' => $result['description'],
+                    'total' => number_format((float) $result['total'], 2, '.', ''),
+                    'expense_amount' => number_format((float) $result['expense_amount'], 2, '.', ''),
+                    'income_amount' => number_format((float) $result['income_amount'], 2, '.', ''),
+                    'entry_count' => (int) $result['entry_count']
+                ];
+            }
+
+            return new JsonResponse([
+                'breakdown' => $breakdown,
+                'count' => count($breakdown),
+                'filters' => [
+                    'month' => $month,
+                    'year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch description breakdown'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/breakdown_description_year', name: 'breakdown_description_year_spent', methods: ['GET'])]
+    public function breakdownDescriptionYear(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $year = $request->query->get('year');
+
+        if (!$year) {
+            return new JsonResponse(['error' => 'Year parameter is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $year = (int) $year;
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $results = $this->entityManager->createQueryBuilder()
+                ->select('
+                    s.description,
+                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    COUNT(s.id) as entry_count
+                ')
+                ->from(Spent::class, 's')
+                ->where('s.year = :year')
+                ->andWhere('s.description IS NOT NULL')
+                ->groupBy('s.description')
+                ->orderBy('total', 'DESC')
+                ->setParameter('year', $year)
+                ->getQuery()
+                ->getArrayResult();
+
+            $breakdown = [];
+            foreach ($results as $result) {
+                $breakdown[] = [
+                    'description' => $result['description'],
+                    'total' => number_format((float) $result['total'], 2, '.', ''),
+                    'expense_amount' => number_format((float) $result['expense_amount'], 2, '.', ''),
+                    'income_amount' => number_format((float) $result['income_amount'], 2, '.', ''),
+                    'entry_count' => (int) $result['entry_count']
+                ];
+            }
+
+            return new JsonResponse([
+                'breakdown' => $breakdown,
+                'count' => count($breakdown),
+                'filters' => [
+                    'year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch description breakdown'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

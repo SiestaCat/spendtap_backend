@@ -955,3 +955,195 @@ curl -X GET "http://localhost:8000/api/spent/balance?month=10&year=2024" \
   -H "Authorization: Bearer your-secure-api-token-here"
 ```
 
+### Category Breakdown by Month
+
+**Endpoint:** `GET /api/spent/breakdown_category_month`
+
+**Description:** Returns financial breakdown grouped by category for a specific month and year.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `month` | integer | Yes | Month number (1-12) |
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "breakdown": [
+        {
+            "category": "Food",
+            "total": "450.75",
+            "expense_amount": "-320.25",
+            "income_amount": "771.00",
+            "entry_count": 15
+        },
+        {
+            "category": "Transportation",
+            "total": "125.50",
+            "expense_amount": "-125.50",
+            "income_amount": "0.00",
+            "entry_count": 8
+        }
+    ],
+    "count": 2,
+    "filters": {
+        "month": 10,
+        "year": 2024
+    }
+}
+```
+
+### Category Breakdown by Year
+
+**Endpoint:** `GET /api/spent/breakdown_category_year`
+
+**Description:** Returns financial breakdown grouped by category for an entire year.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "breakdown": [
+        {
+            "category": "Food",
+            "total": "5420.75",
+            "expense_amount": "-3850.25",
+            "income_amount": "9271.00",
+            "entry_count": 180
+        },
+        {
+            "category": "Transportation",
+            "total": "1505.50",
+            "expense_amount": "-1505.50",
+            "income_amount": "0.00",
+            "entry_count": 96
+        }
+    ],
+    "count": 2,
+    "filters": {
+        "year": 2024
+    }
+}
+```
+
+### Description Breakdown by Month
+
+**Endpoint:** `GET /api/spent/breakdown_description_month`
+
+**Description:** Returns financial breakdown grouped by description for a specific month and year.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `month` | integer | Yes | Month number (1-12) |
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "breakdown": [
+        {
+            "description": "Lunch at restaurant",
+            "total": "150.75",
+            "expense_amount": "-150.75",
+            "income_amount": "0.00",
+            "entry_count": 6
+        },
+        {
+            "description": "Salary",
+            "total": "3000.00",
+            "expense_amount": "0.00",
+            "income_amount": "3000.00",
+            "entry_count": 1
+        }
+    ],
+    "count": 2,
+    "filters": {
+        "month": 10,
+        "year": 2024
+    }
+}
+```
+
+### Description Breakdown by Year
+
+**Endpoint:** `GET /api/spent/breakdown_description_year`
+
+**Description:** Returns financial breakdown grouped by description for an entire year.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "breakdown": [
+        {
+            "description": "Salary",
+            "total": "36000.00",
+            "expense_amount": "0.00",
+            "income_amount": "36000.00",
+            "entry_count": 12
+        },
+        {
+            "description": "Lunch at restaurant",
+            "total": "1809.00",
+            "expense_amount": "-1809.00",
+            "income_amount": "0.00",
+            "entry_count": 72
+        }
+    ],
+    "count": 2,
+    "filters": {
+        "year": 2024
+    }
+}
+```
+
+#### Get Category Breakdown by Month
+```bash
+curl -X GET "http://localhost:8000/api/spent/breakdown_category_month?month=10&year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Category Breakdown by Year
+```bash
+curl -X GET "http://localhost:8000/api/spent/breakdown_category_year?year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Description Breakdown by Month
+```bash
+curl -X GET "http://localhost:8000/api/spent/breakdown_description_month?month=10&year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Description Breakdown by Year
+```bash
+curl -X GET "http://localhost:8000/api/spent/breakdown_description_year?year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
