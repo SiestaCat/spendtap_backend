@@ -45,6 +45,11 @@ All endpoints require: `Authorization: Bearer <your-api-token>`
 - **GET** `/api/spent/all_categories`
 - **Returns:** `{"categories": ["Food", "Transportation", "Entertainment"], "count": 3}`
 
+### Copy Month Entries
+- **POST** `/api/spent/copy_month`
+- **Body:** `{"source_month": 8, "source_year": 2025, "target_month": 9, "target_year": 2025, "category": "Food"}` (category optional)
+- **Returns:** `{"message": "Entries copied successfully", "copied_count": 15, "filters": {...}}`
+
 ## Response Format
 All endpoints return JSON with `data`, `count`, and relevant metadata.
 

@@ -540,6 +540,89 @@ curl -X POST http://localhost:8000/api/spent/create \
 }
 ```
 
+### Copy Month Entries
+
+**Endpoint:** `POST /api/spent/copy_month`
+
+**Description:** Copies all spent entries from one month/year to another month/year. Optionally filter by category. Smart date adjustment for different month lengths.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+- `Content-Type: application/json`
+
+**Request Body Parameters:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `source_month` | integer | Yes | Source month (1-12) |
+| `source_year` | integer | Yes | Source year (1900-9999) |
+| `target_month` | integer | Yes | Target month (1-12) |
+| `target_year` | integer | Yes | Target year (1900-9999) |
+| `category` | string | No | Filter by specific category (if not provided, copies all categories) |
+
+**Response (201 Created):**
+```json
+{
+    "message": "Entries copied successfully",
+    "copied_count": 15,
+    "filters": {
+        "source_month": 8,
+        "source_year": 2025,
+        "target_month": 9,
+        "target_year": 2025,
+        "category": null
+    }
+}
+```
+
+**Response (200 OK) - No entries found:**
+```json
+{
+    "message": "No entries found to copy",
+    "copied_count": 0,
+    "filters": {
+        "source_month": 8,
+        "source_year": 2025,
+        "target_month": 9,
+        "target_year": 2025,
+        "category": "Food"
+    }
+}
+```
+
+**Error (400 Bad Request) - Missing Parameters:**
+```json
+{
+    "error": "source_month, source_year, target_month, and target_year are required"
+}
+```
+
+**Error (400 Bad Request) - Invalid Month:**
+```json
+{
+    "error": "Months must be between 1 and 12"
+}
+```
+
+**Error (400 Bad Request) - Invalid Year:**
+```json
+{
+    "error": "Years must be between 1900 and 9999"
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to copy entries"
+}
+```
+
+**Date Adjustment Logic:**
+- If source date is 2025-08-31 and target is September 2025, the new date becomes 2025-09-30 (September has only 30 days)
+- Time (hours, minutes, seconds) is preserved from the original entry
+- Day is automatically adjusted to the maximum available day in the target month
+
 ### cURL Examples for New Endpoints
 
 #### Get Recent Descriptions (Default Limit)
@@ -634,5 +717,45 @@ curl -X GET http://localhost:8000/api/spent/all_descriptions \
 ```bash
 curl -X GET http://localhost:8000/api/spent/all_categories \
   -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Copy Month Entries - All Categories
+```bash
+curl -X POST http://localhost:8000/api/spent/copy_month \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
+  -d '{
+    "source_month": 8,
+    "source_year": 2025,
+    "target_month": 9,
+    "target_year": 2025
+  }'
+```
+
+#### Copy Month Entries - Specific Category Only
+```bash
+curl -X POST http://localhost:8000/api/spent/copy_month \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
+  -d '{
+    "source_month": 10,
+    "source_year": 2024,
+    "target_month": 11,
+    "target_year": 2024,
+    "category": "Food"
+  }'
+```
+
+#### Copy Month Entries - Different Year
+```bash
+curl -X POST http://localhost:8000/api/spent/copy_month \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
+  -d '{
+    "source_month": 12,
+    "source_year": 2024,
+    "target_month": 1,
+    "target_year": 2025
+  }'
 ```
 
