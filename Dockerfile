@@ -51,7 +51,6 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Create database and run migrations
-RUN php bin/console doctrine:database:create --if-not-exists
 RUN php bin/console doctrine:migrations:migrate --no-interaction
 
 # Expose port 80
