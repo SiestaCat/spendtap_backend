@@ -302,17 +302,18 @@ curl -X POST http://localhost:8000/api/spent/create \
 
 **Endpoint:** `GET /api/spent/filter`
 
-**Description:** Returns all spent entries filtered by specific month and year (no pagination).
+**Description:** Returns all spent entries filtered by specific month and year, with optional category filtering (no pagination).
 
 **Request Headers:**
 - `Authorization: Bearer <your-api-token>`
 
-**Query Parameters (Required):**
+**Query Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `month` | integer | Yes | Month number (1-12) |
-| `year` | integer | Yes | Year (1900-9999) |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `month` | integer | Yes | - | Month number (1-12) |
+| `year` | integer | Yes | - | Year (1900-9999) |
+| `categories` | array/string | No | [] | Categories to filter by. Can be JSON array or comma-separated string |
 
 **Response (200 OK):**
 ```json
@@ -340,7 +341,8 @@ curl -X POST http://localhost:8000/api/spent/create \
     "count": 2,
     "filters": {
         "month": 10,
-        "year": 2024
+        "year": 2024,
+        "categories": ["Food", "Transportation"]
     }
 }
 ```
@@ -363,6 +365,13 @@ curl -X POST http://localhost:8000/api/spent/create \
 ```json
 {
     "error": "Year must be between 1900 and 9999"
+}
+```
+
+**Error (400 Bad Request) - Invalid Categories Format:**
+```json
+{
+    "error": "Invalid categories format. Must be a JSON array"
 }
 ```
 
@@ -649,9 +658,21 @@ curl -X GET "http://localhost:8000/api/spent/last_categories?limit=20" \
   -H "Authorization: Bearer your-secure-api-token-here"
 ```
 
-#### Filter Spent Entries by Month and Year
+#### Filter Spent Entries by Month and Year (All Categories)
 ```bash
 curl -X GET "http://localhost:8000/api/spent/filter?month=10&year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Filter Spent Entries with Specific Categories (JSON Array)
+```bash
+curl -X GET 'http://localhost:8000/api/spent/filter?month=10&year=2024&categories=["Food","Transportation"]' \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Filter Spent Entries with Specific Categories (Comma-Separated)
+```bash
+curl -X GET "http://localhost:8000/api/spent/filter?month=10&year=2024&categories=Food,Transportation,Entertainment" \
   -H "Authorization: Bearer your-secure-api-token-here"
 ```
 

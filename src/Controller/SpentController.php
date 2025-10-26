@@ -129,6 +129,7 @@ class SpentController extends AbstractController
 
         $month = $request->query->get('month');
         $year = $request->query->get('year');
+        $categoriesParam = $request->query->get('categories', '');
 
         if (!$month || !$year) {
             return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
@@ -136,6 +137,20 @@ class SpentController extends AbstractController
 
         $month = (int) $month;
         $year = (int) $year;
+
+        // Parse categories array
+        $categories = [];
+        if (!empty($categoriesParam)) {
+            // Handle both comma-separated string and JSON array
+            if (str_starts_with($categoriesParam, '[')) {
+                $categories = json_decode($categoriesParam, true);
+                if (!is_array($categories)) {
+                    return new JsonResponse(['error' => 'Invalid categories format. Must be a JSON array'], Response::HTTP_BAD_REQUEST);
+                }
+            } else {
+                $categories = array_filter(array_map('trim', explode(',', $categoriesParam)));
+            }
+        }
 
         if ($month < 1 || $month > 12) {
             return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
@@ -146,13 +161,21 @@ class SpentController extends AbstractController
         }
 
         try {
-            $spentEntries = $this->entityManager->createQueryBuilder()
+            $queryBuilder = $this->entityManager->createQueryBuilder()
                 ->select('s')
                 ->from(Spent::class, 's')
                 ->where('s.month = :month')
                 ->andWhere('s.year = :year')
                 ->setParameter('month', $month)
-                ->setParameter('year', $year)
+                ->setParameter('year', $year);
+
+            // Add category filter if categories are provided
+            if (!empty($categories)) {
+                $queryBuilder->andWhere('s.category IN (:categories)')
+                            ->setParameter('categories', $categories);
+            }
+
+            $spentEntries = $queryBuilder
                 ->orderBy('s.id', 'DESC')
                 ->getQuery()
                 ->getResult();
@@ -175,7 +198,8 @@ class SpentController extends AbstractController
                 'count' => count($data),
                 'filters' => [
                     'month' => $month,
-                    'year' => $year
+                    'year' => $year,
+                    'categories' => $categories
                 ]
             ]);
         } catch (\Exception $e) {

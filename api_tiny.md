@@ -22,9 +22,9 @@ All endpoints require: `Authorization: Bearer <your-api-token>`
 - **Returns:** `{"categories": ["Food", "Transportation", "Entertainment"], "count": 3, "limit": 5}`
 
 ### Filter by Month/Year
-- **GET** `/api/spent/filter?month=10&year=2024`
-- **Query:** `month` (1-12, required), `year` (1900-9999, required)
-- **Returns:** `{"data": [{"id": 1, "description": "Lunch", "category": "Food", "amount": "25.50", "date": "2024-10-26 14:30:00", "month": 10, "year": 2024}], "count": 1, "filters": {"month": 10, "year": 2024}}`
+- **GET** `/api/spent/filter?month=10&year=2024&categories=["Food","Transport"]`
+- **Query:** `month` (1-12, required), `year` (1900-9999, required), `categories` (array, optional, default: [])
+- **Returns:** `{"data": [...], "count": 1, "filters": {"month": 10, "year": 2024, "categories": ["Food"]}}`
 
 ### Delete Spent Entry
 - **DELETE** `/api/spent/delete/{id}`
