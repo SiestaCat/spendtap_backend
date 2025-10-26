@@ -301,4 +301,120 @@ class SpentController extends AbstractController
         }
     }
 
+    #[Route('/copy_month', name: 'copy_month_spent', methods: ['POST'])]
+    public function copyMonth(Request $request): JsonResponse
+    {
+        $authResponse = $this->authService->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return new JsonResponse(['error' => 'Invalid JSON data'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Validate required parameters
+        if (!isset($data['source_month']) || !isset($data['source_year']) || 
+            !isset($data['target_month']) || !isset($data['target_year'])) {
+            return new JsonResponse(['error' => 'source_month, source_year, target_month, and target_year are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $sourceMonth = (int) $data['source_month'];
+        $sourceYear = (int) $data['source_year'];
+        $targetMonth = (int) $data['target_month'];
+        $targetYear = (int) $data['target_year'];
+        $category = isset($data['category']) ? $data['category'] : null;
+
+        // Validate month and year values
+        if ($sourceMonth < 1 || $sourceMonth > 12 || $targetMonth < 1 || $targetMonth > 12) {
+            return new JsonResponse(['error' => 'Months must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($sourceYear < 1900 || $sourceYear > 9999 || $targetYear < 1900 || $targetYear > 9999) {
+            return new JsonResponse(['error' => 'Years must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            // Build query for source entries
+            $queryBuilder = $this->entityManager->createQueryBuilder()
+                ->select('s')
+                ->from(Spent::class, 's')
+                ->where('s.month = :sourceMonth')
+                ->andWhere('s.year = :sourceYear')
+                ->setParameter('sourceMonth', $sourceMonth)
+                ->setParameter('sourceYear', $sourceYear);
+
+            // Add category filter if provided
+            if ($category !== null) {
+                $queryBuilder->andWhere('s.category = :category')
+                            ->setParameter('category', $category);
+            }
+
+            $sourceEntries = $queryBuilder->getQuery()->getResult();
+
+            if (empty($sourceEntries)) {
+                return new JsonResponse([
+                    'message' => 'No entries found to copy',
+                    'copied_count' => 0,
+                    'filters' => [
+                        'source_month' => $sourceMonth,
+                        'source_year' => $sourceYear,
+                        'target_month' => $targetMonth,
+                        'target_year' => $targetYear,
+                        'category' => $category
+                    ]
+                ]);
+            }
+
+            $copiedCount = 0;
+            $maxDayInTargetMonth = cal_days_in_month(CAL_GREGORIAN, $targetMonth, $targetYear);
+
+            foreach ($sourceEntries as $sourceEntry) {
+                $newSpent = new Spent();
+                $newSpent->setDescription($sourceEntry->getDescription());
+                $newSpent->setCategory($sourceEntry->getCategory());
+                $newSpent->setAmount($sourceEntry->getAmount());
+                $newSpent->setMonth($targetMonth);
+                $newSpent->setYear($targetYear);
+
+                // Smart date copying - adjust day if target month has fewer days
+                $originalDate = $sourceEntry->getDate();
+                $originalDay = (int) $originalDate->format('j');
+                $adjustedDay = min($originalDay, $maxDayInTargetMonth);
+                
+                $newDate = new \DateTime();
+                $newDate->setDate($targetYear, $targetMonth, $adjustedDay);
+                $newDate->setTime(
+                    (int) $originalDate->format('H'),
+                    (int) $originalDate->format('i'),
+                    (int) $originalDate->format('s')
+                );
+                
+                $newSpent->setDate($newDate);
+
+                $this->entityManager->persist($newSpent);
+                $copiedCount++;
+            }
+
+            $this->entityManager->flush();
+
+            return new JsonResponse([
+                'message' => 'Entries copied successfully',
+                'copied_count' => $copiedCount,
+                'filters' => [
+                    'source_month' => $sourceMonth,
+                    'source_year' => $sourceYear,
+                    'target_month' => $targetMonth,
+                    'target_year' => $targetYear,
+                    'category' => $category
+                ]
+            ], Response::HTTP_CREATED);
+
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to copy entries'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

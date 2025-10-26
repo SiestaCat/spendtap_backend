@@ -7,6 +7,12 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SpentRepository::class)]
+#[ORM\Index(columns: ['amount'], name: 'idx_spent_amount')]
+#[ORM\Index(columns: ['description'], name: 'idx_spent_description')]
+#[ORM\Index(columns: ['category'], name: 'idx_spent_category')]
+#[ORM\Index(columns: ['date'], name: 'idx_spent_date')]
+#[ORM\Index(columns: ['month'], name: 'idx_spent_month')]
+#[ORM\Index(columns: ['year'], name: 'idx_spent_year')]
 class Spent
 {
     #[ORM\Id]
