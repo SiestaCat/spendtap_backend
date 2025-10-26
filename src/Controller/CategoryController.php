@@ -54,7 +54,7 @@ class CategoryController extends AbstractController
                 'limit' => $limit
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Failed to fetch categories'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            throw $e; //throw $e; //return new JsonResponse(['error' => 'Failed to fetch categories'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,7 +83,7 @@ class CategoryController extends AbstractController
                 'count' => count($result)
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Failed to fetch all categories'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            throw $e; //return new JsonResponse(['error' => 'Failed to fetch all categories'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

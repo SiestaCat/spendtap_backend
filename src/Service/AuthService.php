@@ -22,13 +22,13 @@ class AuthService
         $expectedToken = $this->parameterBag->get('app.api_token');
         
         if (!$providedToken || !str_starts_with($providedToken, 'Bearer ')) {
-            return new JsonResponse(['error' => 'Authorization header required'], Response::HTTP_UNAUTHORIZED);
+            throw $e; //return new JsonResponse(['error' => 'Authorization header required'], Response::HTTP_UNAUTHORIZED);
         }
         
         $token = substr($providedToken, 7); // Remove 'Bearer ' prefix
         
         if ($token !== $expectedToken) {
-            return new JsonResponse(['error' => 'Invalid API token'], Response::HTTP_UNAUTHORIZED);
+            throw $e; //return new JsonResponse(['error' => 'Invalid API token'], Response::HTTP_UNAUTHORIZED);
         }
         
         return null; // Authentication successful

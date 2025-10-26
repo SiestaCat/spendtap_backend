@@ -53,7 +53,7 @@ class DescriptionController extends AbstractController
                 'limit' => $limit
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Failed to fetch descriptions'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            throw $e; //return new JsonResponse(['error' => 'Failed to fetch descriptions'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -82,7 +82,7 @@ class DescriptionController extends AbstractController
                 'count' => count($result)
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Failed to fetch all descriptions'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            throw $e; //return new JsonResponse(['error' => 'Failed to fetch all descriptions'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
