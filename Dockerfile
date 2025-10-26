@@ -31,27 +31,28 @@ RUN a2enmod rewrite
 WORKDIR /var/www/html
 
 # Copy existing application directory contents
-COPY . /var/www/html
-
-# Copy existing application directory permissions
 COPY --chown=www-data:www-data . /var/www/html
 
 # Install PHP dependencies
-RUN git config --global --add safe.directory /var/www/html
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Create required directories
-RUN mkdir -p /var/log/spendtap /var/db/spendtap
-RUN chown -R www-data:www-data /var/log/spendtap /var/db/spendtap
-RUN chmod -R 755 /var/log/spendtap /var/db/spendtap
+# Create required directories with proper permissions
+RUN mkdir -p /var/log/spendtap /var/db/spendtap /var/www/html/var/cache /var/www/html/var/log
+RUN chown -R www-data:www-data /var/www/html/var /var/log/spendtap /var/db/spendtap
 
 # Configure Apache Document Root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+# Warm up the cache and set permissions
+RUN php bin/console cache:warmup --env=prod
+
 # Create database and run migrations
 RUN php bin/console doctrine:migrations:migrate --no-interaction
+
+# Final permission fix
+RUN chown -R www-data:www-data /var/www
 
 # Expose port 80
 EXPOSE 80
