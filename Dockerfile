@@ -1,6 +1,8 @@
 # Use PHP 8.2 with Apache
 FROM php:8.4-apache
 
+ENV APP_ENV=prod
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -35,7 +37,8 @@ COPY . /var/www/html
 COPY --chown=www-data:www-data . /var/www/html
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN git config --global --add safe.directory /var/www/html
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Create required directories
 RUN mkdir -p /var/log/spendtap /var/db/spendtap
