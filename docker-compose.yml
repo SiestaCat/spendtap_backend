@@ -1,0 +1,12 @@
+services:
+  spendtap-api:
+    build: .
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=prod
+      - APP_API_TOKEN=your-secure-api-token-here
+    volumes:
+      - ./.docker_volumes/logs:/var/log
+      - ./.docker_volumes/db:/var/db
+    restart: always
