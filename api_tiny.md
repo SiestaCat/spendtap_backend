@@ -31,6 +31,12 @@ All endpoints require: `Authorization: Bearer <your-api-token>`
 - **URL:** `{id}` - spent entry ID
 - **Returns:** `{"message": "Spent entry deleted successfully", "id": 123}`
 
+### Edit Spent Entry
+- **PUT** `/api/spent/edit/{id}`
+- **URL:** `{id}` - spent entry ID
+- **Body:** `{"description": "string", "category": "string", "amount": "number", "date": "string"}` (all optional)
+- **Returns:** `{"id": 123, "description": "Updated lunch", "category": "Food", "amount": "35.75", "date": "2024-10-26 15:00:00", "month": 10, "year": 2024}`
+
 ## Response Format
 All endpoints return JSON with `data`, `count`, and relevant metadata.
 

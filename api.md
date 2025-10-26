@@ -410,6 +410,79 @@ curl -X POST http://localhost:8000/api/spent/create \
 }
 ```
 
+### Edit Spent Entry
+
+**Endpoint:** `PUT /api/spent/edit/{id}`
+
+**Description:** Updates a specific spent entry by ID. All fields are optional - only provided fields will be updated.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+- `Content-Type: application/json`
+
+**URL Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | ID of the spent entry to edit |
+
+**Request Body Parameters:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `description` | string | No | Description of the expense (max 255 characters) |
+| `category` | string | No | Category of the expense (max 255 characters) |
+| `amount` | string/number | No | Amount spent (decimal with up to 20 digits, 2 decimal places) |
+| `date` | string | No | Date of the expense in ISO format (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS) |
+
+**Response (200 OK):**
+```json
+{
+    "id": 123,
+    "description": "Updated lunch description",
+    "category": "Food & Drinks",
+    "amount": "35.75",
+    "date": "2024-10-26 15:00:00",
+    "month": 10,
+    "year": 2024
+}
+```
+
+**Error (400 Bad Request) - Invalid JSON:**
+```json
+{
+    "error": "Invalid JSON data"
+}
+```
+
+**Error (400 Bad Request) - Invalid Amount:**
+```json
+{
+    "error": "Amount must be numeric"
+}
+```
+
+**Error (400 Bad Request) - Invalid Date:**
+```json
+{
+    "error": "Invalid date format"
+}
+```
+
+**Error (404 Not Found):**
+```json
+{
+    "error": "Spent entry not found"
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to update spent entry"
+}
+```
+
 ### cURL Examples for New Endpoints
 
 #### Get Recent Descriptions (Default Limit)
@@ -458,5 +531,39 @@ curl -X DELETE http://localhost:8000/api/spent/delete/123 \
 ```bash
 curl -X DELETE http://localhost:8000/api/spent/delete/5 \
   -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Edit Spent Entry - Update All Fields
+```bash
+curl -X PUT http://localhost:8000/api/spent/edit/123 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
+  -d '{
+    "description": "Updated lunch description",
+    "category": "Food & Drinks",
+    "amount": "35.75",
+    "date": "2024-10-26 15:00:00"
+  }'
+```
+
+#### Edit Spent Entry - Update Only Amount
+```bash
+curl -X PUT http://localhost:8000/api/spent/edit/123 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
+  -d '{
+    "amount": "45.99"
+  }'
+```
+
+#### Edit Spent Entry - Update Description and Category
+```bash
+curl -X PUT http://localhost:8000/api/spent/edit/123 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-secure-api-token-here" \
+  -d '{
+    "description": "Dinner at Italian restaurant",
+    "category": "Dining"
+  }'
 ```
 
