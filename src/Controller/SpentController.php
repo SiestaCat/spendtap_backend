@@ -470,9 +470,9 @@ class SpentController extends AbstractController
         try {
             $result = $this->entityManager->createQueryBuilder()
                 ->select('
-                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    SUM(s.amount) as total,
+                    SUM(CASE WHEN s.amount < 0 THEN s.amount ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN s.amount > 0 THEN s.amount ELSE 0 END) as income_amount,
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
@@ -521,9 +521,9 @@ class SpentController extends AbstractController
         try {
             $result = $this->entityManager->createQueryBuilder()
                 ->select('
-                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    SUM(s.amount) as total,
+                    SUM(CASE WHEN s.amount < 0 THEN s.amount ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN s.amount > 0 THEN s.amount ELSE 0 END) as income_amount,
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
@@ -575,7 +575,7 @@ class SpentController extends AbstractController
         try {
             $result = $this->entityManager->createQueryBuilder()
                 ->select('
-                    SUM(CAST(s.amount AS DECIMAL(20,2))) as balance,
+                    SUM(s.amount) as balance,
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
@@ -628,9 +628,9 @@ class SpentController extends AbstractController
             $results = $this->entityManager->createQueryBuilder()
                 ->select('
                     s.category,
-                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    SUM(s.amount) as total,
+                    SUM(CASE WHEN s.amount < 0 THEN s.amount ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN s.amount > 0 THEN s.amount ELSE 0 END) as income_amount,
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
@@ -692,9 +692,9 @@ class SpentController extends AbstractController
             $results = $this->entityManager->createQueryBuilder()
                 ->select('
                     s.category,
-                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    SUM(s.amount) as total,
+                    SUM(CASE WHEN s.amount < 0 THEN s.amount ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN s.amount > 0 THEN s.amount ELSE 0 END) as income_amount,
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
@@ -759,9 +759,9 @@ class SpentController extends AbstractController
             $results = $this->entityManager->createQueryBuilder()
                 ->select('
                     s.description,
-                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    SUM(s.amount) as total,
+                    SUM(CASE WHEN s.amount < 0 THEN s.amount ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN s.amount > 0 THEN s.amount ELSE 0 END) as income_amount,
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
@@ -823,9 +823,9 @@ class SpentController extends AbstractController
             $results = $this->entityManager->createQueryBuilder()
                 ->select('
                     s.description,
-                    SUM(CAST(s.amount AS DECIMAL(20,2))) as total,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) < 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as expense_amount,
-                    SUM(CASE WHEN CAST(s.amount AS DECIMAL(20,2)) > 0 THEN CAST(s.amount AS DECIMAL(20,2)) ELSE 0 END) as income_amount,
+                    SUM(s.amount) as total,
+                    SUM(CASE WHEN s.amount < 0 THEN s.amount ELSE 0 END) as expense_amount,
+                    SUM(CASE WHEN s.amount > 0 THEN s.amount ELSE 0 END) as income_amount,
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
