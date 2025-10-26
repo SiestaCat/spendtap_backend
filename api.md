@@ -29,7 +29,7 @@ The API token is configured via the `APP_API_TOKEN` environment variable.
 
 ### Create Spent Entry
 
-**Endpoint:** `POST /api/spent`
+**Endpoint:** `POST /api/spent/create`
 
 **Description:** Creates a new spent entry in the database.
 
@@ -79,7 +79,7 @@ The API token is configured via the `APP_API_TOKEN` environment variable.
 
 #### Create Spent Entry - Complete Data
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
@@ -92,7 +92,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Create Spent Entry - Minimal Data (only amount)
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
@@ -102,7 +102,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Create Spent Entry - With Category Only
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
@@ -113,7 +113,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Create Spent Entry - With Description and Amount
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
@@ -124,7 +124,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Create Spent Entry - With Custom Date
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
@@ -139,7 +139,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Missing Authorization Header
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -d '{
     "amount": "10.00"
@@ -154,7 +154,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Invalid API Token
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer invalid-token" \
   -d '{
@@ -170,7 +170,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Invalid JSON
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{"amount": "invalid"}'
@@ -184,7 +184,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Missing Amount
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{
@@ -200,7 +200,7 @@ curl -X POST http://localhost:8000/api/spent \
 
 #### Invalid Date Format
 ```bash
-curl -X POST http://localhost:8000/api/spent \
+curl -X POST http://localhost:8000/api/spent/create \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-secure-api-token-here" \
   -d '{

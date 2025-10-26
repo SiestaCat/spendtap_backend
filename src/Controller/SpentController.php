@@ -26,7 +26,7 @@ class SpentController extends AbstractController
         $this->parameterBag = $parameterBag;
     }
 
-    #[Route('', name: 'create_spent', methods: ['POST'])]
+    #[Route('/create', name: 'create_spent', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
         // Check API token authentication
