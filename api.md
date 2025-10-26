@@ -666,8 +666,12 @@ curl -X GET "http://localhost:8000/api/spent/filter?month=10&year=2024" \
 
 #### Filter Spent Entries with Specific Categories (JSON Array)
 ```bash
-curl -X GET 'http://localhost:8000/api/spent/filter?month=10&year=2024&categories=["Food","Transportation"]' \
-  -H "Authorization: Bearer your-secure-api-token-here"
+curl -G "http://localhost:8000/api/spent/filter" \
+    --data-urlencode 'month=10' \
+    --data-urlencode 'year=2025' \
+    --data-urlencode 'categories=["Food","Transportation", "Belleza"]' \
+    -H "Authorization: Bearer your-secure-api-token-here"
+
 ```
 
 #### Filter Spent Entries with Specific Categories (Comma-Separated)
