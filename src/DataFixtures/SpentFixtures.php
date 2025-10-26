@@ -61,7 +61,7 @@ class SpentFixtures extends Fixture
 
     private function generateMonthlyData(ObjectManager $manager, int $year, int $month): void
     {
-        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $daysInMonth = \cal_days_in_month(CAL_GREGORIAN, $month, $year);
         
         // Generate 4 income records per month
         for ($i = 0; $i < 7; $i++) {

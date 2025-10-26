@@ -393,7 +393,7 @@ class SpentController extends AbstractController
             }
 
             $copiedCount = 0;
-            $maxDayInTargetMonth = cal_days_in_month(CAL_GREGORIAN, $targetMonth, $targetYear);
+            $maxDayInTargetMonth = \cal_days_in_month(CAL_GREGORIAN, $targetMonth, $targetYear);
 
             foreach ($sourceEntries as $sourceEntry) {
                 $newSpent = new Spent();
