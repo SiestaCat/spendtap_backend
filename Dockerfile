@@ -24,8 +24,8 @@ RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Enable Apache modules
+RUN a2enmod rewrite headers
 
 # Set working directory
 WORKDIR /var/www/html
