@@ -579,7 +579,7 @@ class SpentController extends AbstractController
                     COUNT(s.id) as entry_count
                 ')
                 ->from(Spent::class, 's')
-                ->where('s.year < :year OR (s.year = :year AND s.month < :month)')
+                ->where('s.year < :year OR (s.year = :year AND s.month <= :month)')
                 ->setParameter('year', $year)
                 ->setParameter('month', $month)
                 ->getQuery()
