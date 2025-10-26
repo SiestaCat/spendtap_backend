@@ -227,3 +227,101 @@ curl -X POST http://localhost:8000/api/spent/create \
   - If not provided, current server date/time is used
 - **month**: Automatically calculated from the date (1-12)
 - **year**: Automatically calculated from the date (4-digit year)
+
+### Get Recent Descriptions
+
+**Endpoint:** `GET /api/spent/last_descriptions`
+
+**Description:** Returns the most recent unique descriptions from spent entries (non-null values only), ordered by ID descending.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `limit` | integer | No | 5 | Number of results to return (1-100) |
+
+**Response (200 OK):**
+```json
+{
+    "descriptions": [
+        "Lunch at restaurant",
+        "Bus ticket to downtown", 
+        "Grocery shopping"
+    ],
+    "count": 3,
+    "limit": 5
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch descriptions"
+}
+```
+
+### Get Recent Categories
+
+**Endpoint:** `GET /api/spent/last_categories`
+
+**Description:** Returns the most recent unique categories from spent entries (non-null values only), ordered by ID descending.
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `limit` | integer | No | 5 | Number of results to return (1-100) |
+
+**Response (200 OK):**
+```json
+{
+    "categories": [
+        "Food",
+        "Transportation",
+        "Entertainment"
+    ],
+    "count": 3,
+    "limit": 5
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch categories"
+}
+```
+
+
+### cURL Examples for New Endpoints
+
+#### Get Recent Descriptions (Default Limit)
+```bash
+curl -X GET http://localhost:8000/api/spent/last_descriptions \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Recent Descriptions (Custom Limit)
+```bash
+curl -X GET "http://localhost:8000/api/spent/last_descriptions?limit=10" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Recent Categories (Default Limit)
+```bash
+curl -X GET http://localhost:8000/api/spent/last_categories \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Get Recent Categories (Custom Limit)
+```bash
+curl -X GET "http://localhost:8000/api/spent/last_categories?limit=20" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+

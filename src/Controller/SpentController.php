@@ -26,10 +26,8 @@ class SpentController extends AbstractController
         $this->parameterBag = $parameterBag;
     }
 
-    #[Route('/create', name: 'create_spent', methods: ['POST'])]
-    public function create(Request $request): JsonResponse
+    private function checkAuthentication(Request $request): ?JsonResponse
     {
-        // Check API token authentication
         $providedToken = $request->headers->get('Authorization');
         $expectedToken = $this->parameterBag->get('app.api_token');
         
@@ -41,6 +39,17 @@ class SpentController extends AbstractController
         
         if ($token !== $expectedToken) {
             return new JsonResponse(['error' => 'Invalid API token'], Response::HTTP_UNAUTHORIZED);
+        }
+        
+        return null; // Authentication successful
+    }
+
+    #[Route('/create', name: 'create_spent', methods: ['POST'])]
+    public function create(Request $request): JsonResponse
+    {
+        $authResponse = $this->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
         }
 
         $data = json_decode($request->getContent(), true);
@@ -97,4 +106,6 @@ class SpentController extends AbstractController
             return new JsonResponse(['error' => 'Failed to create spent entry'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }
