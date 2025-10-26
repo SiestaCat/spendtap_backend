@@ -298,6 +298,80 @@ curl -X POST http://localhost:8000/api/spent/create \
 }
 ```
 
+### Filter Spent Entries by Month and Year
+
+**Endpoint:** `GET /api/spent/filter`
+
+**Description:** Returns all spent entries filtered by specific month and year (no pagination).
+
+**Request Headers:**
+- `Authorization: Bearer <your-api-token>`
+
+**Query Parameters (Required):**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `month` | integer | Yes | Month number (1-12) |
+| `year` | integer | Yes | Year (1900-9999) |
+
+**Response (200 OK):**
+```json
+{
+    "data": [
+        {
+            "id": 3,
+            "description": "Lunch at restaurant",
+            "category": "Food",
+            "amount": "25.50",
+            "date": "2024-10-26 14:30:00",
+            "month": 10,
+            "year": 2024
+        },
+        {
+            "id": 1,
+            "description": "Coffee",
+            "category": "Food",
+            "amount": "4.50",
+            "date": "2024-10-15 09:00:00",
+            "month": 10,
+            "year": 2024
+        }
+    ],
+    "count": 2,
+    "filters": {
+        "month": 10,
+        "year": 2024
+    }
+}
+```
+
+**Error (400 Bad Request) - Missing Parameters:**
+```json
+{
+    "error": "Month and year parameters are required"
+}
+```
+
+**Error (400 Bad Request) - Invalid Month:**
+```json
+{
+    "error": "Month must be between 1 and 12"
+}
+```
+
+**Error (400 Bad Request) - Invalid Year:**
+```json
+{
+    "error": "Year must be between 1900 and 9999"
+}
+```
+
+**Error (500 Internal Server Error):**
+```json
+{
+    "error": "Failed to fetch spent entries"
+}
+```
 
 ### cURL Examples for New Endpoints
 
@@ -322,6 +396,18 @@ curl -X GET http://localhost:8000/api/spent/last_categories \
 #### Get Recent Categories (Custom Limit)
 ```bash
 curl -X GET "http://localhost:8000/api/spent/last_categories?limit=20" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Filter Spent Entries by Month and Year
+```bash
+curl -X GET "http://localhost:8000/api/spent/filter?month=10&year=2024" \
+  -H "Authorization: Bearer your-secure-api-token-here"
+```
+
+#### Filter Spent Entries for Different Month/Year
+```bash
+curl -X GET "http://localhost:8000/api/spent/filter?month=12&year=2023" \
   -H "Authorization: Bearer your-secure-api-token-here"
 ```
 

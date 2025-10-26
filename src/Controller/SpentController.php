@@ -107,5 +107,68 @@ class SpentController extends AbstractController
         }
     }
 
+    #[Route('/filter', name: 'filter_spent', methods: ['GET'])]
+    public function filter(Request $request): JsonResponse
+    {
+        $authResponse = $this->checkAuthentication($request);
+        if ($authResponse) {
+            return $authResponse;
+        }
+
+        $month = $request->query->get('month');
+        $year = $request->query->get('year');
+
+        if (!$month || !$year) {
+            return new JsonResponse(['error' => 'Month and year parameters are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $month = (int) $month;
+        $year = (int) $year;
+
+        if ($month < 1 || $month > 12) {
+            return new JsonResponse(['error' => 'Month must be between 1 and 12'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($year < 1900 || $year > 9999) {
+            return new JsonResponse(['error' => 'Year must be between 1900 and 9999'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $spentEntries = $this->entityManager->createQueryBuilder()
+                ->select('s')
+                ->from(Spent::class, 's')
+                ->where('s.month = :month')
+                ->andWhere('s.year = :year')
+                ->setParameter('month', $month)
+                ->setParameter('year', $year)
+                ->orderBy('s.id', 'DESC')
+                ->getQuery()
+                ->getResult();
+
+            $data = [];
+            foreach ($spentEntries as $spent) {
+                $data[] = [
+                    'id' => $spent->getId(),
+                    'description' => $spent->getDescription(),
+                    'category' => $spent->getCategory(),
+                    'amount' => $spent->getAmount(),
+                    'date' => $spent->getDate()->format('Y-m-d H:i:s'),
+                    'month' => $spent->getMonth(),
+                    'year' => $spent->getYear()
+                ];
+            }
+
+            return new JsonResponse([
+                'data' => $data,
+                'count' => count($data),
+                'filters' => [
+                    'month' => $month,
+                    'year' => $year
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to fetch spent entries'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
